@@ -3,6 +3,7 @@ package aryumka.vcerp.api.fundMng.service
 import aryumka.vcerp.api.fundMng.model.FundingProposal
 import aryumka.vcerp.api.fundMng.repository.ProposalRepository
 import jakarta.transaction.Transactional
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,13 +22,12 @@ class ProposeService(
         repository.findAll()
 
     @Transactional
-    fun updateFundingProposal(id: Long, newTitle: String): FundingProposal? =
-        repository.findById(id).map {
-            it.copy(title = newTitle)
-        }.orElse(null)
+    fun updateFundingProposal(id: Long, newTitle: String): FundingProposal? {
+        var proposal = repository.findById(id).orElse(null)
+        return repository.save(proposal.copy(title = newTitle))
+    }
 
     @Transactional
-    fun deleteFundingProposal(id: Long) {
+    fun deleteFundingProposal(id: Long) =
         repository.deleteById(id)
-    }
 }

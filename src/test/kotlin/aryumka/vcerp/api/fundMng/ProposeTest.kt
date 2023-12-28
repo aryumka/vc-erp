@@ -6,7 +6,9 @@ import aryumka.vcerp.api.fundMng.service.ProposeService
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.SpringBootTest
 
 class ProposeGenerator {
@@ -28,7 +30,7 @@ class ProPoseGeneratorTest: BehaviorSpec({
     }
 })
 
-@SpringBootTest
+@DataJpaTest
 class ProposalRepositoryTest(@Autowired private val proposalRepository: ProposalRepository) : BehaviorSpec() {
     init {
         given("A proposal repository") {
@@ -37,7 +39,8 @@ class ProposalRepositoryTest(@Autowired private val proposalRepository: Proposal
 
                 then("the proposal should be retrievable") {
                     val retrievedProposal = proposalRepository.findById(proposal.id).orElse(null)
-                    retrievedProposal?.title shouldBe "Sample Proposal"
+                    retrievedProposal shouldNotBe null
+                    retrievedProposal.title shouldBe "Sample Proposal"
                 }
             }
         }
@@ -58,9 +61,11 @@ class ProposeUpdateTest(@Autowired private val repository: ProposalRepository): 
 
             test("제안서를 수정한다면") {
                 val newTitle = "새로운 제안서 제목"
+//                    retrievedProposal?.title shouldBe "Sample Proposal"
                 val updatedProposal = service.updateFundingProposal(proposal.id, newTitle)
                 println("updatedProposal: $updatedProposal")
-                updatedProposal!!.id shouldBe proposal.id
+                updatedProposal shouldNotBe null
+                updatedProposal?.title shouldBe newTitle
             }
         }
     }
