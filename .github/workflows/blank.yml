@@ -31,6 +31,10 @@ jobs:
         with:
           java-version: 19
 
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: chmod +x gradlew
+
       - name: run tests
         run: ./gradlew test
       # Runs a set of commands using the runners shell
