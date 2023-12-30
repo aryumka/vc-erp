@@ -29,12 +29,16 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(module = "mockito-core")
+	}
 	runtimeOnly("com.h2database:h2")
 	testImplementation ("io.kotest:kotest-runner-junit5:5.8.0")
 	testImplementation ("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 	testImplementation("io.kotest:kotest-framework-datatest:5.8.0")
 	testImplementation("io.mockk:mockk:1.13.4")
+	testImplementation("com.ninja-squad:springmockk:4.0.0")
+
 }
 
 tasks.withType<KotlinCompile> {

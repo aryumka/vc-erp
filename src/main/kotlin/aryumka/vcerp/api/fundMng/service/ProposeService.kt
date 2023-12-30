@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service
 class ProposeService(
     private val repository: ProposalRepository
 ) {
-    @Transactional
     fun createFundingProposal(title: String): FundingProposal =
         repository.save(FundingProposal(title = title))
+
     @Transactional
     fun getFundingProposalById(id: Long): FundingProposal? =
         repository.findById(id).orElse(null)
