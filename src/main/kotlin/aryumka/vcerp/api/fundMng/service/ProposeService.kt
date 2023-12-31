@@ -4,6 +4,7 @@ import aryumka.vcerp.api.fundMng.model.FundingProposal
 import aryumka.vcerp.api.fundMng.repository.ProposalRepository
 import jakarta.transaction.Transactional
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,6 +17,9 @@ class ProposeService(
     @Transactional
     fun getFundingProposalById(id: Long): FundingProposal? =
         repository.findById(id).orElse(null)
+    @Transactional
+    fun getFundingProposalByIdOrNull(id: Long): FundingProposal? =
+        repository.findByIdOrNull(id) ?: throw EmptyResultDataAccessException(1)
 
     @Transactional
     fun getAllFundingProposals(): List<FundingProposal> =

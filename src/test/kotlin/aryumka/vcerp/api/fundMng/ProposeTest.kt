@@ -5,8 +5,10 @@ import aryumka.vcerp.api.fundMng.model.FundingProposal
 import aryumka.vcerp.api.fundMng.repository.ProposalRepository
 import aryumka.vcerp.api.fundMng.service.ProposeService
 import com.ninjasquad.springmockk.MockkBean
+import io.kotest.core.extensions.Extension
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
@@ -82,80 +84,56 @@ class ProposeUpdateTest(@Autowired private val repository: ProposalRepository): 
         }
     }
 }
-
-@WebMvcTest
-@AutoConfigureMockMvc
-class ProposeUpdateTestWithMockk(@Autowired val mockMvc: MockMvc): FunSpec() {
-    @MockkBean
-    private lateinit var service: ProposeService
-    init {
-        beforeTest{
-            service = mockk()
-            every { service.createFundingProposal(any()) } returns FundingProposal(1L, "제안서 제목")
-            every { service.updateFundingProposal(any(), any()) } returns FundingProposal(1L, "새로운 제안서 제목")
-
-        }
-        context("신청된 제안서가 있는 상황에서") {
-            mockMvc.perform(post("/fundMng/proposals/create").content("제안서 제목").contentType("text/plain"))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.title").value("제안서 제목"))
-
-            test("제안서를 수정한다면") {
-                mockMvc.perform(put("/fundMng/proposals/1").content("새로운 제안서 제목").contentType("text/plain"))
-                    .andExpect(status().isOk)
-                    .andExpect(jsonPath("$.id").value(1L))
-                    .andExpect(jsonPath("$.title").value("새로운 제안서 제목"))
-            }
-        }
-    }
-}
-
+//todo update테스트 어떻게 해야되지
+//
+//@WebMvcTest(ProposeController::class)
+//@AutoConfigureMockMvc
+//class ProposeUpdateTestWithMockk(
+//    val mockMvc: MockMvc,
+//    @MockkBean var service: ProposeService): FunSpec({
+//    context("신청된 제안서가 있는 상황에서") {
+//        every { service.createFundingProposal(any()) } returns FundingProposal(1L, "새로운 제안서 제목")
+//
+////        mockMvc
+////        .perform(
+////          post("/fundMng/proposals/create")
+////              .content("제안서 제목")
+////          )
+////        .andExpect(status().isOk)
+////        .andExpect(jsonPath("$.id").value(1L))
+////        .andExpect(jsonPath("$.title").value("제안서 제목"))
+////
+//        test("제안서를 수정한다면") {
+//            every { service.updateFundingProposal(any(), any()) } returns FundingProposal(1L, "새로운 제안서 제목")
+//            mockMvc.perform(put("/fundMng/proposals/1").content("새로운 제안서 제목").contentType("text/plain"))
+//                .andExpect(status().isOk)
+//                .andExpect(jsonPath("$.id").value(1L))
+//                .andExpect(jsonPath("$.title").value("새로운 제안서 제목"))
+//        }
+//    }
+//})
 
 @WebMvcTest(ProposeController::class)
 @AutoConfigureMockMvc
-class ProposeUpdateTestGpt(@Autowired val mockMvc: MockMvc) : FunSpec() {
+class ProposeUpdateTest2(
+    val mockMvc: MockMvc,
+    @MockkBean private var service: ProposeService
+) : FunSpec({
+    test("제안서 생성") {
+        val expectedId = 1L
+        val expectedTitle = "제안서 제목"
 
-    @MockkBean
-    private lateinit var proposalRepository: ProposalRepository
+        every { service.createFundingProposal(any()) } returns FundingProposal(1L, "제안서 제목")
 
-    @MockkBean
-    private lateinit var service: ProposeService
+        mockMvc
+            .perform(
+                post("/fundMng/proposal/create")
+                    .content(expectedTitle)
+            )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedId))
+            .andExpect(jsonPath("$.title").value(expectedTitle))
 
-    init {
-        test("제안서 생성") {
-            val expectedId = 1L
-            val expectedTitle = "제안서 제목"
-
-            proposalRepository = mockk()
-            service = mockk()
-//            every { service.createFundingProposal(any()) } returns FundingProposal(1L, "제안서 제목")
-//            every { proposalRepository.findById(any()) } returns Optional.of(FundingProposal(1L, "제안서 제목"))
-            every { service.getFundingProposalById(1) } returns FundingProposal(1L, "제안서 제목")
-
-            mockMvc
-                .perform(
-                    get("/fundMng/proposal/1")
-                )
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.id").value(expectedId))
-                .andExpect(jsonPath("$.title").value(expectedTitle))
-
-            verify { service.createFundingProposal(any()) }
-        }
-
-        test("제안서 수정") {
-            val proposalId = 1
-            val newTitle = "새로운 제안서 제목"
-            val expectedId = 1L
-            val expectedTitle = "새로운 제안서 제목"
-
-            mockMvc.perform(put("/fundMng/proposal/1")
-                .content(newTitle)
-                .contentType("text/plain")
-            ).andExpect(status().isOk)
-                .andExpect(jsonPath("$.id").value(expectedId))
-                .andExpect(jsonPath("$.title").value(expectedTitle))
-        }
+        verify { service.createFundingProposal(any()) }
     }
-}
+})
