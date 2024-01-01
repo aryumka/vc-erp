@@ -64,10 +64,10 @@ jobs:
           name: result
       - name: Make pem file
         run: |
-          echo "$KEY" >> $HOME/key.pem
+          echo "$key" >> $HOME/key.pem
           chmod 400 $HOME/key.pem
         env:
-          KEY: ${{secrets.KEY}}
+          key: ${{secrets.KEY}}
       - name: SCP transfer
         run: scp -i $HOME/key.pem -o StrictHostKeyChecking=no *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
       - name: Execute remote commands
