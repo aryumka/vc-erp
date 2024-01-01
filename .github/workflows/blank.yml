@@ -35,16 +35,16 @@ jobs:
       - name: Run a one-line script
         run: chmod +x gradlew
 
-      - name: run tests
-        run: ./gradlew test
-
       - name: build
         run: ./gradlew build
+
+      - name: run tests
+        run: ./gradlew test
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: sample
+          name: result
           path: build/libs/*.jar
 
       # Runs a set of commands using the runners shell
@@ -61,18 +61,16 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: sample
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.KEY }}
+          name: result
       - name: Make pem file
         run: |
           echo "$KEY" >> $HOME/key.pem
           chmod 400 $HOME/key.pem
+        env:
+          KEY: ${{secrets.KEY}}
       - name: SCP transfer
         run: scp -i $HOME/key.pem *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
       - name: Execute remote commands
         run: |
-          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${USER}@${IP} "sudo fuser -k 8080/tcp"
-          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${USER}@${IP} "sudo nohup java -jar ~/*.jar &"
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.IP }} "sudo fuser -k 8080/tcp"
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.IP }} "sudo nohup java -jar ~/*.jar &"
