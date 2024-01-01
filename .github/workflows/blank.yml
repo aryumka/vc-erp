@@ -69,7 +69,7 @@ jobs:
         env:
           KEY: ${{secrets.KEY}}
       - name: SCP transfer
-        run: scp -i $HOME/key.pem *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
+        run: scp -i $HOME/key.pem -o StrictHostKeyChecking=no *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
       - name: Execute remote commands
         run: |
           ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.IP }} "sudo fuser -k 8080/tcp"
