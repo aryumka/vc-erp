@@ -35,6 +35,9 @@ jobs:
       - name: Run a one-line script
         run: chmod +x gradlew
 
+      - name: build
+        run: ./gradlew build
+
       - name: run tests
         run: ./gradlew test
 
