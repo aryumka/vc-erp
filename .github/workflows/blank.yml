@@ -66,9 +66,13 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.KEY }}
+      - name: Make pem file
+        run: |
+          echo "$KEY" >> $HOME/key.pem
+          chmod 400 $HOME/key.pem
       - name: SCP transfer
-        run: scp *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
+        run: scp -i $HOME/key.pem *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
       - name: Execute remote commands
         run: |
-          ssh ${{ secrets.USER }}@${{ secrets.IP }} "sudo fuser -k 8080/tcp"
-          ssh ${{ secrets.USER }}@${{ secrets.IP }} "sudo nohup java -jar ~/*.jar &"
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${USER}@${IP} "sudo fuser -k 8080/tcp"
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${USER}@${IP} "sudo nohup java -jar ~/*.jar &"
