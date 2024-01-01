@@ -72,5 +72,5 @@ jobs:
         run: scp -i $HOME/key.pem -o StrictHostKeyChecking=no *.jar ${{ secrets.USER }}@${{ secrets.IP }}:~/
       - name: Execute remote commands
         run: |
-          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.IP }} "sudo fuser -k 8080/tcp"
+          # ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.IP }} "sudo fuser -k 8080/tcp" # 임시 주석
           ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.IP }} "sudo nohup java -jar ~/*.jar &"
